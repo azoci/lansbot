@@ -1,5 +1,5 @@
-# scrapyTutorial
-scrapy ( web crawling tutorial )
+# scrapy land site
+scrapy ( 네이버 부동산 크롤링 tutorial )
 
 ## 데이터 흐름
 
@@ -20,22 +20,22 @@ $source ./ENV/bin/activate
 ```
 
 ### install scrapy
-scrapy 패키지를 설치한다. (https://github.com/scrapy/scrapy)
-```
-$pip install Scrapy
-```
+[scrapy 패키지](https://github.com/scrapy/scrapy)
+
+    $pip install Scrapy
+
 
 ### install elasticSearch
-elasticSearch 패키지를 설치한다. (https://github.com/knockrentals/scrapy-elasticsearch)
-```
-$pip3 install ScrapyElasticSearch
-```
+[elasticSearch 패키지](https://github.com/knockrentals/scrapy-elasticsearch)
+
+    $pip3 install ScrapyElasticSearch
+
 
 ### install Scrapy-UserAgents
-user-agent 설정 패키지를 설치한다. (https://github.com/grammy-jiang/scrapy-useragents)
-```
-$pip install scrapy-useragents
-```
+[user-agent 설정 패키지](https://github.com/grammy-jiang/scrapy-useragents)
+
+    $pip install scrapy-useragents
+
 
 ### configurate setting.py
 settings.py에 # Elastic Search 부분을 설정한다.
