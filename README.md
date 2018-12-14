@@ -1,5 +1,5 @@
 # scrapy land site
-scrapy ( 네이버 부동산 크롤링 tutorial )
+scrapy ( 네이버 부동산 크롤링 + ELK tutorial )
 
 ## 데이터 흐름
 
