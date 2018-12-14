@@ -1,0 +1,87 @@
+#land.naver example
+scrapy shell 'https://land.naver.com/article/articleList.nhn?rletTypeCd=A01&tradeTypeCd=&hscpTypeCd=&cortarNo=1168011500'
+scrapy shell 'https://land.naver.com/article/articleList.nhn?rletTypeCd=A01&tradeTypeCd=&hscpTypeCd=&cortarNo=1168011500&page=32'
+#run spider
+scrapy crawl land
+
+#tr selectors
+trlist = response.xpath('//tbody//tr')
+for tr in trlist:
+  if tr.xpath('.//td[contains(@class, "sale_type  bottom")]/div/text()').extract_first() is None:
+
+#type
+sale_type = tr.xpath('.//td[contains(@class, "sale_type  bottom")]/div/text()').extract_first()
+building_type = tr.xpath('.//td[contains(@class, "sale_type2  bottomline")]/div/text()').extract_first()
+
+#name
+building_name = tr.xpath('.//td[contains(@class, "align_l name")]/div/a/text()').extract_first()
+
+#area
+area = tr.xpath('.//td[contains(@class, "num")]/div/text()').extract_first().strip().split('/')
+supply_area = area[0]
+if len(area) > 1:
+  exclusive_area = area[1]
+
+#floor
+floor = tr.xpath('.//td[contains(@class, "num2")]/div/span/text()').extract_first().strip().split('/')
+sale_floor = floor[0]
+if len(floor) > 1:
+  max_floor = floor[1]
+
+#rent fee
+sale_price = tr.xpath('.//td[contains(@class, "num align_r")]/div/strong/text()').extract_first().split('/')
+deposit = int(sale_price[0].replace(',', ''))
+if len(sale_price) > 1:
+  rent_fee = int(sale_price[1].replace(',', ''))
+
+#현재 페이지
+response.xpath('//div[contains(@class, "paginate")]/strong/text()').extract_first()
+
+#paginage href
+next_page = response.xpath('//div[contains(@class, "paginate")]//@href').extract_first()
+
+#page_url
+'https://land.naver.com/article/articleList.nhn?rletTypeCd=A01&tradeTypeCd=&hscpTypeCd=&cortarNo=1168011500&page=32'
+
+
+#parsing page_num
+lst = response.url.split('&')
+matched = [x for x in lst if 'page=' in x]
+if matched:
+  pnum = mached.split('=')[1]
+else
+  pnum = 1
+
+
+#elastic search conf. -- 버전마다 다름
+ITEM_PIPELINES = {
+  'scrapyelasticsearch.scrapyelasticsearch.ElasticSearchPipeline': 500
+}
+
+ELASTICSEARCH_SERVERS = ['localhost:9200']
+ELASTICSEARCH_INDEX = 'scrapy'
+ELASTICSEARCH_TYPE = 'items'
+#ELASTICSEARCH_UNIQ_KEY = 'ts'
+
+# yield
+yield {
+  'ts': datetime.datetime.now().isoformat(),
+  'sale_type': tr.xpath('.//td[contains(@class, "sale_type  bottom")]/div/text()').extract_first(),
+  'building_type': tr.xpath('.//td[contains(@class, "sale_type2  bottomline")]/div/text()').extract_first(),
+  'building_name' : tr.xpath('.//td[contains(@class, "align_l name")]/div/a/text()').extract_first(),
+  'area' : area,
+  'supply_area': supply_area,
+  'exclusive_area' : exclusive_area,
+  'floor' : floor,
+  'sale_floor' : sale_floor,
+  'max_floor': max_floor,
+  'sale_price' : sale_price,
+  'deposit' : deposit,
+  'rent_fee': rent_fee
+}
+
+#search param code
+rletTypeCd: A01=아파트, A02=오피스텔, B01=분양권, 주택=C03, 토지=E03, 원룸=C01, 상가=D02, 사무실=D01, 공장=E02, 재개발=F01, 건물=D03
+tradeTypeCd (거래종류): all=전체, A1=매매, B1=전세, B2=월세, B3=단기임대  //&tradeTypeCd=
+hscpTypeCd (매물종류): 아파트=A01, 주상복합=A03, 재건축=A04 (복수 선택 가능)
+cortarNo(법정동코드): (예: 1168010600 서울시, 강남구, 대치동)
